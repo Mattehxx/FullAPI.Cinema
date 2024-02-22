@@ -1,4 +1,5 @@
 using FullAPI.Cinema.Data;
+using FullAPI.Cinema.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSqlServer<CinemaDbContext>(builder.Configuration.GetConnectionString("Default"));
-//builder.Services.AddSingleton<Mapper>();
+builder.Services.AddSingleton<Mapper>();
 
 var app = builder.Build();
 

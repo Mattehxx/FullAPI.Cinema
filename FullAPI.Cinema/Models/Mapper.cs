@@ -12,7 +12,8 @@ namespace FullAPI.Cinema.Models
             {
                 Id = entity.EmployeeId,
                 Name = entity.Name,
-                Surname = entity.Surname
+                Surname = entity.Surname,
+                IsDeleted = entity.IsDeleted,
             };
         }
 
@@ -23,6 +24,7 @@ namespace FullAPI.Cinema.Models
                 EmployeeId = model.Id,
                 Name = model.Name,
                 Surname = model.Surname,
+                IsDeleted = model.IsDeleted,
             };
         }
 
@@ -39,8 +41,23 @@ namespace FullAPI.Cinema.Models
                 Title = entity.Title,
                 Description = entity.Description,
                 Duration = entity.Duration,
+                IsDeleted = entity.IsDeleted,
                 Techonlogies = entity.Technologies?.ConvertAll(MapEntityToModel),
                 Shows = entity.Shows?.ConvertAll(MapEntityToModel)
+            };
+        }
+
+        public Movie MapModelToEntity (MovieModel model)
+        {
+            return new Movie()
+            {
+                MovieId = model.Id,
+                ImdbId = model.ImdbId,
+                Title = model.Title,
+                Description = model.Description,
+                Duration = model.Duration,
+                IsDeleted = model.IsDeleted,
+                LimitationId = model.LimitationId
             };
         }
 
@@ -53,6 +70,7 @@ namespace FullAPI.Cinema.Models
                 Id = entity.ShowId,
                 StartTime = entity.StartTime,
                 EndTime = entity.EndTime,
+                IsDeleted = entity.IsDeleted,
                 MovieRoomId = entity.MovieRoomId,
                 MovieRoomName = entity.MovieRoom.Name
             };

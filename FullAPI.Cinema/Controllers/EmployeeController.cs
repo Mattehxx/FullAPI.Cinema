@@ -11,31 +11,33 @@ namespace FullAPI.Cinema.Controllers
     {
         private readonly CinemaDbContext _dbContext;
         private readonly Mapper _mapper;
+        private readonly ILogger<MovieController> _logger;
 
-        public EmployeeController(CinemaDbContext dbContext, Mapper mapper)
+        public EmployeeController(CinemaDbContext dbContext, Mapper mapper, ILogger<MovieController> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
-        public IEnumerable<EmployeeModel> GetAll()
+        public IActionResult GetAll()
         {
-            List<EmployeeModel> employeesModel = new();
-
             try
             {
+                List<EmployeeModel> employeesModel = new();
                 var employees = _dbContext.Employees.ToList();
 
                 foreach (var employee in employees)
                 {
                     employeesModel.Add(_mapper.MapEntityToModel(employee));
                 }
-                return employeesModel;
+                return Ok(employeesModel);
             }
-            catch
+            catch (Exception ex)
             {
-                return employeesModel;
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

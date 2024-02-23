@@ -56,6 +56,7 @@ namespace FullAPI.Cinema.Controllers
                 List<Movie> movies = _dbContext.Movies
                     .Include(m => m.Technologies)
                     .Include(m => m.Limitation)
+                    .Where(m => !m.IsDeleted)
                     .ToList();
 
                 if (movies == null)
@@ -64,6 +65,74 @@ namespace FullAPI.Cinema.Controllers
                 List<MovieModel> models = movies.ConvertAll(_mapper.MapEntityToModel);
 
                 return Ok(models);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Post(MovieModel model)
+        {
+            try
+            {
+                _dbContext.Add(_mapper.MapModelToEntity(model));
+                _dbContext.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult Put(MovieModel model)
+        {
+            try
+            {
+                Movie? entity = _dbContext.Movies.SingleOrDefault(m => m.MovieId == model.Id);
+                
+                if (entity == null)
+                    return BadRequest("Movie not found");
+
+                entity.ImdbId = model.ImdbId;
+                entity.Title = model.Title;
+                entity.Description = model.Description;
+                entity.Duration = model.Duration;
+                entity.LimitationId = model.LimitationId;
+
+                _dbContext.Update(entity);
+                _dbContext.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpDelete]
+        [Route("{id}/{toDelete}")]
+        public IActionResult Delete(int id, bool toDelete)
+        {
+            try
+            {
+                Movie? movie = _dbContext.Movies.Include(m => m.Shows).SingleOrDefault(m => m.MovieId == id);
+
+                if (movie == null)
+                    return BadRequest("Movie not found");
+
+                movie.IsDeleted = toDelete;
+                movie.Shows?.ForEach(p => p.IsDeleted = toDelete);
+
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Movie not deleted");
             }
             catch (Exception ex)
             {

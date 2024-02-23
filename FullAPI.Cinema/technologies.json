@@ -1,0 +1,14 @@
+[
+    {
+        "name":"IMAX",
+        "type":"Video"
+    },
+    {
+        "name":"Dolby Atmos",
+        "type":"Audio"
+    },
+    {
+        "name":"3D",
+        "type":"Video"
+    }
+]

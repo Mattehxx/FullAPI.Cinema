@@ -5,6 +5,7 @@
         public required int MovieRoomId { get; set; }
         public required string Name { get; set; }
         public required int CleanTimeMins { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public List<Show>? Shows { get; set; }
         public List<Technology>? Technologies { get; set; }
     }

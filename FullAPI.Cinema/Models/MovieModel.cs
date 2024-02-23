@@ -10,6 +10,7 @@ namespace FullAPI.Cinema.Models
         public required string Title { get; set; }
         public string? Description { get; set; }
         public required int Duration { get; set; }
+        public bool IsDeleted { get; set; }
         public int? LimitationId { get; set; }
         public string? Limitation { get; set; }
         public List<ItemModel>? Techonlogies { get; set; }

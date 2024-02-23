@@ -1,6 +1,7 @@
 using FullAPI.Cinema.Data;
 using FullAPI.Cinema.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,12 @@ using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetService<CinemaDbContext>();
     ctx.Database.Migrate();
+
+    if(!ctx.Technologies.Any())
+    {
+        string json = File.ReadAllText("technologies.json");
+        List<TechnologyJson>? technologies = JsonSerializer.Deserialize<List<TechnologyJson>>(json);
+    }
 }
 
 // Configure the HTTP request pipeline.

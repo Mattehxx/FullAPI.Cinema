@@ -6,5 +6,6 @@
         public required string Name { get; set; }
         public required string Surname { get; set; }
         public bool IsDeleted { get; set; }
+        public List<EmployeeActivityModel>? Activities { get; set; }
     }
 }

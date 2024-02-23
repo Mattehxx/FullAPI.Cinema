@@ -4,6 +4,25 @@ namespace FullAPI.Cinema.Models
 {
     public class Mapper
     {
+        #region Activity
+
+        public EmployeeActivityModel MapEntityToModel (Activity entity)
+        {
+            return new EmployeeActivityModel()
+            {
+                ActivityId = entity.ActivityId,
+                RoleId = entity.RoleId,
+                RoleName = entity.Role.Description,
+                ShowId = entity.ShowId,
+                ShowStartTime = entity.Show.StartTime,
+                ShowEndTime = entity.Show.EndTime,
+                ShowRoomId = entity.Show.MovieRoomId,
+                ShowRoomName = entity.Show.MovieRoom.Name
+            };
+        }
+
+        #endregion
+
         #region Employee
 
         public EmployeeModel MapEntityToModel(Employee entity) 
@@ -14,6 +33,7 @@ namespace FullAPI.Cinema.Models
                 Name = entity.Name,
                 Surname = entity.Surname,
                 IsDeleted = entity.IsDeleted,
+                Activities = entity.Activities?.ConvertAll(MapEntityToModel)
             };
         }
 
@@ -24,7 +44,7 @@ namespace FullAPI.Cinema.Models
                 EmployeeId = model.Id,
                 Name = model.Name,
                 Surname = model.Surname,
-                IsDeleted = model.IsDeleted,
+                IsDeleted = model.IsDeleted
             };
         }
 

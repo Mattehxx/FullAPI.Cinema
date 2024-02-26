@@ -71,10 +71,6 @@ namespace FullAPI.Cinema.Controllers
             try
             {
                 model.Id = 0;
-                var sameTimeShows = DateInBound(model);
-
-                if (sameTimeShows == null || sameTimeShows.Count > 0)
-                    return BadRequest("There is already another show in the specified time span");
 
                 if (model.MovieDuration == null && model.MovieRoomCleanTime == null)
                 {
@@ -85,7 +81,14 @@ namespace FullAPI.Cinema.Controllers
                         .Where(m => m.MovieRoomId == model.MovieRoomId).Select(m => m.CleanTimeMins).SingleOrDefault();
                 }
 
-                _dbContext.Add(_mapper.MapModelToEntity(model));
+                var entity = _mapper.MapModelToEntity(model);
+
+                var sameTimeShows = DateInBound(entity);
+
+                if (sameTimeShows == null || sameTimeShows.Count > 0)
+                    return BadRequest("There is already another show in the specified time span");
+
+                _dbContext.Add(entity);
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Show not created");
             }
             catch (Exception ex)
@@ -105,11 +108,6 @@ namespace FullAPI.Cinema.Controllers
                 if (show == null)
                     return BadRequest("Show not found");
 
-                var sameTimeShows = DateInBound(model);
-
-                if (sameTimeShows == null || sameTimeShows.Count > 0)
-                    return BadRequest("There is already another show in the specified time span");
-
                 if (model.MovieDuration == null && model.MovieRoomCleanTime == null)
                 {
                     model.MovieDuration = _dbContext.Movies
@@ -118,6 +116,12 @@ namespace FullAPI.Cinema.Controllers
                     model.MovieRoomCleanTime = _dbContext.MovieRooms
                         .Where(m => m.MovieRoomId == model.MovieRoomId).Select(m => m.CleanTimeMins).SingleOrDefault();
                 }
+
+                var entity = _mapper.MapModelToEntity(model);
+                var sameTimeShows = DateInBound(entity);
+
+                if (sameTimeShows == null || sameTimeShows.Count > 0)
+                    return BadRequest("There is already another show in the specified time span");
 
                 show.Price = model.Price;
                 show.StartTime = model.StartTime;
@@ -158,16 +162,16 @@ namespace FullAPI.Cinema.Controllers
 
         #region Utility
 
-        private List<Show>? DateInBound(ShowModel model)
+        private List<Show>? DateInBound(Show entity)
         {
             try
             {
                 List<Show> sameTimeShows = _dbContext.Shows
                     .Where(s => 
-                    s.ShowId != model.Id &&
-                    s.MovieRoomId == model.MovieRoomId &&
-                    ((model.StartTime >= s.StartTime && model.StartTime <= s.EndTime) ||
-                    (model.EndTime >= s.StartTime && model.EndTime <= s.EndTime)))
+                    s.ShowId != entity.ShowId &&
+                    s.MovieRoomId == entity.MovieRoomId &&
+                    ((entity.StartTime >= s.StartTime && entity.StartTime <= s.EndTime) ||
+                    (entity.EndTime >= s.StartTime && entity.EndTime <= s.EndTime)))
                     .ToList();
 
                 return sameTimeShows;

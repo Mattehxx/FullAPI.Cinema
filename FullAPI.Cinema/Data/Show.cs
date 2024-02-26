@@ -9,8 +9,8 @@
         public bool IsDeleted { get; set; } = false;
         public required int MovieRoomId { get; set; }
         public required int MovieId { get; set; }
-        public required MovieRoom MovieRoom { get; set; }
-        public required Movie Movie { get; set; }
+        public MovieRoom MovieRoom { get; set; }
+        public Movie Movie { get; set; }
         public List<Activity>? Activities { get; set; }
     }
 }

@@ -110,13 +110,13 @@ namespace FullAPI.Cinema.Controllers
 
                 employee.IsDeleted = toDelete;
 
-                if (toDelete)
-                {
-                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.EmployeeId == employee.EmployeeId).ToList());
-                    employee.Activities = null;
-                }
+                //if (toDelete)
+                //{
+                //    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.EmployeeId == employee.EmployeeId).ToList());
+                //    employee.Activities = null;
+                //}
 
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Movie not deleted");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not deleted");
             }
             catch (Exception ex)
             {

@@ -6,7 +6,7 @@ namespace FullAPI.Cinema.Models
     {
         #region Activity
 
-        public EmployeeActivityModel MapEntityToModel (Activity entity)
+        public EmployeeActivityModel MapEntityToEmployeeActivityModel(Activity entity)
         {
             return new EmployeeActivityModel()
             {
@@ -18,6 +18,19 @@ namespace FullAPI.Cinema.Models
                 ShowEndTime = entity.Show.EndTime,
                 ShowRoomId = entity.Show.MovieRoomId,
                 ShowRoomName = entity.Show.MovieRoom.Name
+            };
+        }
+
+        public ShowActivityModel MapEntityToShowActivityModel(Activity entity)
+        {
+            return new ShowActivityModel()
+            {
+                ActivityId = entity.ActivityId,
+                EmployeeId = entity.EmployeeId,
+                EmployeeName = entity.Employee.Name,
+                EmployeeSurname = entity.Employee.Surname,
+                RoleId = entity.RoleId,
+                RoleName = entity.Role.Description
             };
         }
 
@@ -33,7 +46,7 @@ namespace FullAPI.Cinema.Models
                 Name = entity.Name,
                 Surname = entity.Surname,
                 IsDeleted = entity.IsDeleted,
-                Activities = entity.Activities?.ConvertAll(MapEntityToModel)
+                Activities = entity.Activities?.ConvertAll(MapEntityToEmployeeActivityModel)
             };
         }
 
@@ -63,7 +76,7 @@ namespace FullAPI.Cinema.Models
                 Duration = entity.Duration,
                 IsDeleted = entity.IsDeleted,
                 Techonlogies = entity.Technologies?.ConvertAll(MapEntityToModel),
-                Shows = entity.Shows?.ConvertAll(MapEntityToModel)
+                Shows = entity.Shows?.ConvertAll(MapEntityToMovieShowModel)
             };
         }
 
@@ -83,7 +96,39 @@ namespace FullAPI.Cinema.Models
 
         #endregion
 
-        public MovieShowModel MapEntityToModel(Show entity)
+        #region Show
+
+        public ShowModel MapEntityToModel(Show entity)
+        {
+            return new ShowModel()
+            {
+                Id = entity.ShowId,
+                Price = entity.Price,
+                StartTime = entity.StartTime,
+                EndTime = entity.EndTime,
+                MovieRoomId = entity.MovieRoomId,
+                MovieRoomCleanTime = entity.MovieRoom.CleanTimeMins,
+                MovieId = entity.MovieId,
+                MovieDuration = entity.Movie.Duration,
+                IsDeleted = entity.IsDeleted
+            };
+        }
+
+        public Show MapModelToEntity(ShowModel model)
+        {
+            return new Show()
+            {
+                ShowId = model.Id,
+                Price = model.Price,
+                StartTime = model.StartTime,
+                EndTime = model.StartTime.AddMinutes(model.MovieDuration + model.MovieRoomCleanTime),
+                IsDeleted = model.IsDeleted,
+                MovieRoomId = model.MovieRoomId,
+                MovieId = model.MovieId
+            };
+        }
+
+        public MovieShowModel MapEntityToMovieShowModel(Show entity)
         {
             return new MovieShowModel()
             {
@@ -95,6 +140,26 @@ namespace FullAPI.Cinema.Models
                 MovieRoomName = entity.MovieRoom.Name
             };
         }
+
+        public DetailShowModel MapEntityToDetailShowModel(Show entity)
+        {
+            return new DetailShowModel()
+            {
+                Id = entity.ShowId,
+                Price = entity.Price,
+                StartTime = entity.StartTime,
+                EndTime = entity.EndTime,
+                MovieRoomId = entity.MovieRoomId,
+                MovieRoomName = entity.MovieRoom.Name,
+                MovieId = entity.MovieId,
+                MovieName = entity.Movie.Title,
+                LimitationId = entity.Movie.LimitationId,
+                LimitationDescription = entity.Movie.Limitation?.Name,
+                Activities = entity.Activities?.ConvertAll(MapEntityToShowActivityModel)
+            };
+        }
+
+        #endregion
 
         public ItemModel MapEntityToModel (Technology entity)
         {

@@ -71,15 +71,19 @@ namespace FullAPI.Cinema.Controllers
             try
             {
                 model.Id = 0;
+                var sameTimeShows = DateInBound(model);
 
-                var sameTimeShows = _dbContext.Shows
-                    .Where(s => s.MovieRoomId == model.MovieRoomId && 
-                    ((model.StartTime > s.StartTime && model.StartTime < s.EndTime) ||
-                    (model.EndTime > s.StartTime && model.EndTime < s.EndTime)))
-                    .ToList();
-
-                if (sameTimeShows.Count > 0)
+                if (sameTimeShows == null || sameTimeShows.Count > 0)
                     return BadRequest("There is already another show in the specified time span");
+
+                if (model.MovieDuration == null && model.MovieRoomCleanTime == null)
+                {
+                    model.MovieDuration = _dbContext.Movies
+                        .Where(m => m.MovieId == model.MovieId).Select(m => m.Duration).SingleOrDefault();
+
+                    model.MovieRoomCleanTime = _dbContext.MovieRooms
+                        .Where(m => m.MovieRoomId == model.MovieRoomId).Select(m => m.CleanTimeMins).SingleOrDefault();
+                }
 
                 _dbContext.Add(_mapper.MapModelToEntity(model));
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Show not created");
@@ -101,9 +105,23 @@ namespace FullAPI.Cinema.Controllers
                 if (show == null)
                     return BadRequest("Show not found");
 
+                var sameTimeShows = DateInBound(model);
+
+                if (sameTimeShows == null || sameTimeShows.Count > 0)
+                    return BadRequest("There is already another show in the specified time span");
+
+                if (model.MovieDuration == null && model.MovieRoomCleanTime == null)
+                {
+                    model.MovieDuration = _dbContext.Movies
+                        .Where(m => m.MovieId == model.MovieId).Select(m => m.Duration).SingleOrDefault();
+
+                    model.MovieRoomCleanTime = _dbContext.MovieRooms
+                        .Where(m => m.MovieRoomId == model.MovieRoomId).Select(m => m.CleanTimeMins).SingleOrDefault();
+                }
+
                 show.Price = model.Price;
                 show.StartTime = model.StartTime;
-                show.EndTime = model.StartTime.AddMinutes(model.MovieDuration + model.MovieRoomCleanTime);
+                show.EndTime = model.StartTime.AddMinutes((double)(model.MovieDuration + model.MovieRoomCleanTime));
                 show.MovieRoomId = model.MovieRoomId;
                 show.MovieId = model.MovieId;
 
@@ -137,5 +155,30 @@ namespace FullAPI.Cinema.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        #region Utility
+
+        private List<Show>? DateInBound(ShowModel model)
+        {
+            try
+            {
+                List<Show> sameTimeShows = _dbContext.Shows
+                    .Where(s => 
+                    s.ShowId != model.Id &&
+                    s.MovieRoomId == model.MovieRoomId &&
+                    ((model.StartTime >= s.StartTime && model.StartTime <= s.EndTime) ||
+                    (model.EndTime >= s.StartTime && model.EndTime <= s.EndTime)))
+                    .ToList();
+
+                return sameTimeShows;
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return null;
+            }
+        }  
+
+        #endregion
     }
 }

@@ -110,7 +110,8 @@ namespace FullAPI.Cinema.Models
                 MovieRoomCleanTime = entity.MovieRoom.CleanTimeMins,
                 MovieId = entity.MovieId,
                 MovieDuration = entity.Movie.Duration,
-                IsDeleted = entity.IsDeleted
+                IsDeleted = entity.IsDeleted,
+                Activities = entity.Activities?.ConvertAll(MapEntityToShowActivityModel)
             };
         }
 
@@ -156,6 +157,48 @@ namespace FullAPI.Cinema.Models
                 LimitationId = entity.Movie.LimitationId,
                 LimitationDescription = entity.Movie.Limitation?.Name,
                 Activities = entity.Activities?.ConvertAll(MapEntityToShowActivityModel)
+            };
+        }
+
+        public ShowRoomModel MapEntityToShowRoomModel(Show entity)
+        {
+            return new ShowRoomModel()
+            {
+                Id = entity.ShowId,
+                Price = entity.Price,
+                StartTime = entity.StartTime,
+                EndTime = entity.EndTime,
+                MovieId = entity.MovieId,
+                MovieDuration = entity.Movie.Duration,
+                IsDeleted = entity.IsDeleted
+            };
+        }
+
+        #endregion
+
+        #region MovieRoom
+
+        public MovieRoomModel MapEntityToModel (MovieRoom entity)
+        {
+            return new MovieRoomModel()
+            {
+                Id = entity.MovieRoomId,
+                Name = entity.Name,
+                CleanTimeMins = entity.CleanTimeMins,
+                IsDeleted = entity.IsDeleted,
+                Shows = entity.Shows?.ConvertAll(MapEntityToShowRoomModel),
+                Technologies = entity.Technologies?.ConvertAll(MapEntityToModel)
+            };
+        }
+
+        public MovieRoom MapModelToEntity (MovieRoomModel model)
+        {
+            return new MovieRoom()
+            {
+                MovieRoomId = model.Id,
+                Name = model.Name,
+                CleanTimeMins = model.CleanTimeMins,
+                IsDeleted = model.IsDeleted
             };
         }
 

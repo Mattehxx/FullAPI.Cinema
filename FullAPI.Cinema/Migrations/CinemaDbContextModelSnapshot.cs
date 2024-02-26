@@ -47,7 +47,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasIndex("ShowId");
 
-                    b.ToTable("Activities");
+                    b.ToTable("Activities", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Employee", b =>
@@ -71,7 +71,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasKey("EmployeeId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Limitation", b =>
@@ -94,7 +94,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasKey("LimitationId");
 
-                    b.ToTable("Limitations");
+                    b.ToTable("Limitations", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Movie", b =>
@@ -129,7 +129,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasIndex("LimitationId");
 
-                    b.ToTable("Movies");
+                    b.ToTable("Movies", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.MovieRoom", b =>
@@ -152,7 +152,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasKey("MovieRoomId");
 
-                    b.ToTable("MovieRooms");
+                    b.ToTable("MovieRooms", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Role", b =>
@@ -172,7 +172,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Show", b =>
@@ -207,7 +207,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasIndex("MovieRoomId");
 
-                    b.ToTable("Shows");
+                    b.ToTable("Shows", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Technology", b =>
@@ -230,7 +230,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasKey("TechnologyId");
 
-                    b.ToTable("Technologies");
+                    b.ToTable("Technologies", (string)null);
                 });
 
             modelBuilder.Entity("MovieRoomTechnology", b =>
@@ -245,7 +245,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasIndex("TechnologiesTechnologyId");
 
-                    b.ToTable("MovieRoomTechnology");
+                    b.ToTable("MovieRoomTechnology", (string)null);
                 });
 
             modelBuilder.Entity("MovieTechnology", b =>
@@ -260,7 +260,7 @@ namespace FullAPI.Cinema.Migrations
 
                     b.HasIndex("TechnologiesTechnologyId");
 
-                    b.ToTable("MovieTechnology");
+                    b.ToTable("MovieTechnology", (string)null);
                 });
 
             modelBuilder.Entity("FullAPI.Cinema.Data.Activity", b =>

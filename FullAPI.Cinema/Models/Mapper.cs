@@ -122,7 +122,7 @@ namespace FullAPI.Cinema.Models
                 ShowId = model.Id,
                 Price = model.Price,
                 StartTime = model.StartTime,
-                EndTime = model.StartTime.AddMinutes(model.MovieDuration + model.MovieRoomCleanTime),
+                EndTime = model.StartTime.AddMinutes((double)(model.MovieDuration + model.MovieRoomCleanTime)),
                 IsDeleted = model.IsDeleted,
                 MovieRoomId = model.MovieRoomId,
                 MovieId = model.MovieId

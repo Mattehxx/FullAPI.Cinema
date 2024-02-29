@@ -151,8 +151,8 @@ namespace FullAPI.Cinema.Controllers
 
                 show.IsDeleted = toDelete;
 
-                if (toDelete)
-                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.ShowId == id).ToList());
+                //if (toDelete)
+                //    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.ShowId == id).ToList());
 
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Show not deleted");
             }

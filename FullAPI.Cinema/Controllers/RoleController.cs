@@ -110,8 +110,8 @@ namespace FullAPI.Cinema.Controllers
 
                 role.IsDeleted = toDelete;
 
-                if(toDelete)
-                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.RoleId == id).ToList());
+                //if(toDelete)
+                //    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.RoleId == id).ToList());
 
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not deleted");
             }

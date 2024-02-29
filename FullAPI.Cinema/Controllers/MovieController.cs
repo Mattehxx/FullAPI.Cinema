@@ -78,7 +78,11 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                _dbContext.Add(_mapper.MapModelToEntity(model));
+                var entity = _mapper.MapModelToEntity(model);
+                entity.Technologies = _dbContext.Technologies
+                    .Join(model.Techonlogies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                    .ToList();
+                _dbContext.Add(entity);
                 _dbContext.SaveChanges();
 
                 return Ok();
@@ -105,6 +109,9 @@ namespace FullAPI.Cinema.Controllers
                 entity.Description = model.Description;
                 entity.Duration = model.Duration;
                 entity.LimitationId = model.LimitationId;
+                entity.Technologies = _dbContext.Technologies
+                    .Join(model.Techonlogies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                    .ToList();
 
                 _dbContext.Update(entity);
                 _dbContext.SaveChanges();

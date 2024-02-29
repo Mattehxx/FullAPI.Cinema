@@ -69,8 +69,12 @@ namespace FullAPI.Cinema.Controllers
             try
             {
                 model.Id = 0;
+                var entity = _mapper.MapModelToEntity(model);
+                entity.Technologies = _dbContext.Technologies
+                    .Join(model.Technologies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                    .ToList();
 
-                _dbContext.Add(_mapper.MapModelToEntity(model));
+                _dbContext.Add(entity);
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Movie room not created");
             }
             catch (Exception ex)
@@ -92,6 +96,9 @@ namespace FullAPI.Cinema.Controllers
 
                 movieRoom.Name = model.Name;
                 movieRoom.CleanTimeMins = model.CleanTimeMins;
+                movieRoom.Technologies = _dbContext.Technologies
+                    .Join(model.Technologies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                    .ToList();
 
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Movie room not edited");
             }

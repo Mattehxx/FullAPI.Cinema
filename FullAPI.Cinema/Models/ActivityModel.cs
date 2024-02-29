@@ -13,7 +13,7 @@ namespace FullAPI.Cinema.Models
         public required int ShowId { get; set; }
         public DateTime? ShowStartTime { get; set; }
         public DateTime? ShowEndTime { get; set; }
-        public required int MovieRoomId { get; set; }
+        public int? MovieRoomId { get; set; }
         public string? MovieRoomName { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using FullAPI.Cinema.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace FullAPI.Cinema.Controllers
 {
@@ -46,6 +47,13 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
+                bool employee = _dbContext.Employees.Where(e => e.EmployeeId == model.EmployeeId).Select(e => e.IsDeleted).SingleOrDefault();
+                bool role = _dbContext.Roles.Where(r => r.RoleId == model.RoleId).Select(r => r.IsDeleted).SingleOrDefault();
+                bool show = _dbContext.Shows.Where(s => s.ShowId == model.ShowId).Select(s => s.IsDeleted).SingleOrDefault();
+
+                if (employee || role || show)
+                    return BadRequest("Employee, role or show is not in database");
+
                 _dbContext.Add(_mapper.MapModelToEntity(model));
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Activity not created");
             }

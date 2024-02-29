@@ -13,9 +13,9 @@ namespace FullAPI.Cinema.Controllers
     {
         private readonly CinemaDbContext _dbContext;
         private readonly Mapper _mapper;
-        private readonly ILogger<MovieController> _logger;
+        private readonly ILogger<MovieRoomController> _logger;
 
-        public MovieRoomController(CinemaDbContext dbContext, Mapper mapper, ILogger<MovieController> logger)
+        public MovieRoomController(CinemaDbContext dbContext, Mapper mapper, ILogger<MovieRoomController> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;

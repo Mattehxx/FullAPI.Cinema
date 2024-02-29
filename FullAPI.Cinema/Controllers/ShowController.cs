@@ -12,9 +12,9 @@ namespace FullAPI.Cinema.Controllers
     {
         private readonly CinemaDbContext _dbContext;
         private readonly Mapper _mapper;
-        private readonly ILogger<MovieController> _logger;
+        private readonly ILogger<ShowController> _logger;
 
-        public ShowController(CinemaDbContext dbContext, Mapper mapper, ILogger<MovieController> logger)
+        public ShowController(CinemaDbContext dbContext, Mapper mapper, ILogger<ShowController> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -150,6 +150,9 @@ namespace FullAPI.Cinema.Controllers
                     return BadRequest("Show not found");
 
                 show.IsDeleted = toDelete;
+
+                if (toDelete)
+                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.ShowId == id).ToList());
 
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Show not deleted");
             }

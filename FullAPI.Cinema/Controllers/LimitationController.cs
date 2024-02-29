@@ -8,13 +8,13 @@ namespace FullAPI.Cinema.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class LimitationController : ControllerBase
     {
         private readonly CinemaDbContext _dbContext;
         private readonly Mapper _mapper;
-        private readonly ILogger<EmployeeController> _logger;
+        private readonly ILogger<LimitationController> _logger;
 
-        public EmployeeController(CinemaDbContext dbContext, Mapper mapper, ILogger<EmployeeController> logger)
+        public LimitationController(CinemaDbContext dbContext, Mapper mapper, ILogger<LimitationController> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -27,15 +27,14 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                var employee = _dbContext.Employees
-                    .Include(e => e.Activities).ThenInclude(a => a.Show).ThenInclude(s => s.MovieRoom)
-                    .Include(e => e.Activities).ThenInclude(a => a.Role)
-                    .SingleOrDefault(e => e.EmployeeId == id);
+                var limitation = _dbContext.Limitations
+                    .Include(l => l.Movies)
+                    .SingleOrDefault(l => l.LimitationId == id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (limitation == null)
+                    return BadRequest("Limitation not found");
 
-                return Ok(_mapper.MapEntityToModel(employee));
+                return Ok(_mapper.MapEntityToModel(limitation));
             }
             catch (Exception ex)
             {
@@ -49,9 +48,9 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                var employees = _dbContext.Employees.ToList();
+                var limitations = _dbContext.Limitations.ToList();
 
-                return Ok(employees.ConvertAll(_mapper.MapEntityToModel));
+                return Ok(limitations.ConvertAll(_mapper.MapEntityToModel));
             }
             catch (Exception ex)
             {
@@ -61,12 +60,12 @@ namespace FullAPI.Cinema.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(EmployeeModel model)
+        public IActionResult Post(LimitationModel model)
         {
             try
             {
                 _dbContext.Add(_mapper.MapModelToEntity(model));
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not created");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Limitation not created");
             }
             catch (Exception ex)
             {
@@ -76,19 +75,19 @@ namespace FullAPI.Cinema.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(EmployeeModel model)
+        public IActionResult Put(LimitationModel model)
         {
             try
             {
-                Employee? employee = _dbContext.Employees.SingleOrDefault(e => e.EmployeeId == model.Id);
+                Limitation? limitation = _dbContext.Limitations.SingleOrDefault(l => l.LimitationId == model.Id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (limitation == null)
+                    return BadRequest("Limitation not found");
 
-                employee.Name = model.Name;
-                employee.Surname = model.Surname;
+                limitation.Name = model.Name;
+                limitation.Description = model.Description;
 
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not edited");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Limitation not edited");
             }
             catch (Exception ex)
             {
@@ -103,17 +102,14 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                Employee? employee = _dbContext.Employees.Include(e => e.Activities).SingleOrDefault(e => e.EmployeeId == id);
+                Limitation? limitation = _dbContext.Limitations.SingleOrDefault(l => l.LimitationId == id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (limitation == null)
+                    return BadRequest("Limitation not found");
 
-                employee.IsDeleted = toDelete;
+                limitation.IsDeleted = toDelete;
 
-                if (toDelete)
-                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.EmployeeId == id).ToList());
-
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not deleted");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Limitation not deleted");
             }
             catch (Exception ex)
             {

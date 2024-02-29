@@ -6,6 +6,51 @@ namespace FullAPI.Cinema.Models
     {
         #region Activity
 
+        public ActivityModel MapEntityToModel(Activity entity)
+        {
+            return new ActivityModel()
+            {
+                Id = entity.ActivityId,
+                EmployeeId = entity.EmployeeId,
+                EmployeeName = entity.Employee.Name,
+                EmployeeSurname = entity.Employee.Surname,
+                RoleId = entity.RoleId,
+                RoleDescription = entity.Role.Description,
+                ShowId = entity.ShowId,
+                ShowStartTime = entity.Show.StartTime,
+                ShowEndTime = entity.Show.EndTime,
+                MovieRoomId = entity.Show.MovieRoomId,
+                MovieRoomName = entity.Show.MovieRoom.Name
+            };
+        }
+
+        public Activity MapModelToEntity(ActivityModel model)
+        {
+            return new Activity()
+            {
+                ActivityId = model.Id,
+                RoleId = model.RoleId,
+                ShowId = model.ShowId,
+                EmployeeId = model.EmployeeId
+            };
+        }
+
+        public RoleActivityModel MapEntityToRoleActivityModel(Activity entity)
+        {
+            return new RoleActivityModel()
+            {
+                Id = entity.ActivityId,
+                EmployeeId = entity.EmployeeId,
+                EmployeeName = entity.Employee.Name,
+                EmployeeSurname = entity.Employee.Surname,
+                ShowId = entity.ShowId,
+                ShowStartTime = entity.Show.StartTime,
+                ShowEndTime = entity.Show.EndTime,
+                MovieRoomId = entity.Show.MovieRoomId,
+                MovieRoomName = entity.Show.MovieRoom.Name
+            };
+        }
+
         public EmployeeActivityModel MapEntityToEmployeeActivityModel(Activity entity)
         {
             return new EmployeeActivityModel()
@@ -75,7 +120,7 @@ namespace FullAPI.Cinema.Models
                 Description = entity.Description,
                 Duration = entity.Duration,
                 IsDeleted = entity.IsDeleted,
-                Techonlogies = entity.Technologies?.ConvertAll(MapEntityToModel),
+                Techonlogies = entity.Technologies?.ConvertAll(MapEntityToItemModel),
                 Shows = entity.Shows?.ConvertAll(MapEntityToMovieShowModel)
             };
         }
@@ -91,6 +136,20 @@ namespace FullAPI.Cinema.Models
                 Duration = model.Duration,
                 IsDeleted = model.IsDeleted,
                 LimitationId = model.LimitationId
+            };
+        }
+
+        public TechnologyMovieModel MapEntityToTechnologyMovieModel(Movie entity)
+        {
+            return new TechnologyMovieModel()
+            {
+                Id = entity.MovieId,
+                ImdbId = entity.ImdbId,
+                Title = entity.Title,
+                Description = entity.Description,
+                Duration = entity.Duration,
+                IsDeleted = entity.IsDeleted,
+                LimitationId = entity.LimitationId
             };
         }
 
@@ -174,6 +233,19 @@ namespace FullAPI.Cinema.Models
             };
         }
 
+        public LimitationMovieModel MapEntityToLimitationMovieModel(Movie entity)
+        {
+            return new LimitationMovieModel()
+            {
+                Id = entity.MovieId,
+                ImdbId = entity.ImdbId,
+                Title = entity.Title,
+                Description = entity.Description,
+                Duration = entity.Duration,
+                IsDeleted = entity.IsDeleted
+            };
+        }
+
         #endregion
 
         #region MovieRoom
@@ -187,7 +259,7 @@ namespace FullAPI.Cinema.Models
                 CleanTimeMins = entity.CleanTimeMins,
                 IsDeleted = entity.IsDeleted,
                 Shows = entity.Shows?.ConvertAll(MapEntityToShowRoomModel),
-                Technologies = entity.Technologies?.ConvertAll(MapEntityToModel)
+                Technologies = entity.Technologies?.ConvertAll(MapEntityToItemModel)
             };
         }
 
@@ -202,9 +274,98 @@ namespace FullAPI.Cinema.Models
             };
         }
 
+        public TechnologyMovieRoomModel MapEntityToTechnologyMovieRoomModel(MovieRoom entity)
+        {
+            return new TechnologyMovieRoomModel()
+            {
+                Id = entity.MovieRoomId,
+                Name = entity.Name,
+                CleanTimeMins = entity.CleanTimeMins,
+                IsDeleted = entity.IsDeleted
+            };
+        }
+
         #endregion
 
-        public ItemModel MapEntityToModel (Technology entity)
+        #region Role
+
+        public RoleModel MapEntityToModel(Role entity)
+        {
+            return new RoleModel()
+            {
+                Id = entity.RoleId,
+                Description = entity.Description,
+                IsDeleted = entity.IsDeleted,
+                Activities = entity.Activities?.ConvertAll(MapEntityToRoleActivityModel)
+            };
+        }
+
+        public Role MapModelToEntity(RoleModel model)
+        {
+            return new Role()
+            {
+                RoleId = model.Id,
+                Description = model.Description,
+                IsDeleted = model.IsDeleted
+            };
+        }
+
+        #endregion
+
+        #region Limitation
+
+        public LimitationModel MapEntityToModel(Limitation entity)
+        {
+            return new LimitationModel()
+            {
+                Id = entity.LimitationId,
+                Name = entity.Name,
+                Description = entity.Description,
+                IsDeleted = entity.IsDeleted,
+                Movies = entity.Movies?.ConvertAll(MapEntityToLimitationMovieModel)
+            };
+        }
+
+        public Limitation MapModelToEntity(LimitationModel model)
+        {
+            return new Limitation()
+            {
+                LimitationId = model.Id,
+                Name = model.Name,
+                Description = model.Description,
+                IsDeleted = model.IsDeleted
+            };
+        }
+
+        #endregion
+
+        #region Technology
+
+        public TechnologyModel MapEntityToModel(Technology entity)
+        {
+            return new TechnologyModel()
+            {
+                Id = entity.TechnologyId,
+                Name = entity.Name,
+                TechnologyType = entity.TechnologyType,
+                IsDeleted = entity.IsDeleted,
+                MovieRooms = entity.MovieRooms?.ConvertAll(MapEntityToTechnologyMovieRoomModel),
+                Movies = entity.Movies?.ConvertAll(MapEntityToTechnologyMovieModel)
+            };
+        }
+
+        public Technology MapModelToEntity(TechnologyModel model)
+        {
+            return new Technology()
+            {
+                TechnologyId = model.Id,
+                Name = model.Name,
+                TechnologyType = model.TechnologyType,
+                IsDeleted = model.IsDeleted
+            };
+        }
+
+        public ItemModel MapEntityToItemModel(Technology entity)
         {
             return new ItemModel()
             {
@@ -213,5 +374,7 @@ namespace FullAPI.Cinema.Models
                 Description = entity.TechnologyType
             };
         }
+
+        #endregion
     }
 }

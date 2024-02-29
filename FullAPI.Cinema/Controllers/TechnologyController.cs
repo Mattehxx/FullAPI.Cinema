@@ -8,13 +8,13 @@ namespace FullAPI.Cinema.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class TechnologyController : ControllerBase
     {
         private readonly CinemaDbContext _dbContext;
         private readonly Mapper _mapper;
-        private readonly ILogger<EmployeeController> _logger;
+        private readonly ILogger<TechnologyController> _logger;
 
-        public EmployeeController(CinemaDbContext dbContext, Mapper mapper, ILogger<EmployeeController> logger)
+        public TechnologyController(CinemaDbContext dbContext, Mapper mapper, ILogger<TechnologyController> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -27,15 +27,15 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                var employee = _dbContext.Employees
-                    .Include(e => e.Activities).ThenInclude(a => a.Show).ThenInclude(s => s.MovieRoom)
-                    .Include(e => e.Activities).ThenInclude(a => a.Role)
-                    .SingleOrDefault(e => e.EmployeeId == id);
+                var technology = _dbContext.Technologies
+                    .Include(t => t.MovieRooms)
+                    .Include(t => t.Movies)
+                    .SingleOrDefault(t => t.TechnologyId == id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (technology == null)
+                    return BadRequest("Technology not found");
 
-                return Ok(_mapper.MapEntityToModel(employee));
+                return Ok(_mapper.MapEntityToModel(technology));
             }
             catch (Exception ex)
             {
@@ -49,9 +49,9 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                var employees = _dbContext.Employees.ToList();
+                var technologies = _dbContext.Technologies.ToList();
 
-                return Ok(employees.ConvertAll(_mapper.MapEntityToModel));
+                return Ok(technologies.ConvertAll(_mapper.MapEntityToItemModel));
             }
             catch (Exception ex)
             {
@@ -61,12 +61,12 @@ namespace FullAPI.Cinema.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(EmployeeModel model)
+        public IActionResult Post(TechnologyModel model)
         {
             try
             {
                 _dbContext.Add(_mapper.MapModelToEntity(model));
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not created");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Technology not created");
             }
             catch (Exception ex)
             {
@@ -76,19 +76,19 @@ namespace FullAPI.Cinema.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(EmployeeModel model)
+        public IActionResult Put(TechnologyModel model)
         {
             try
             {
-                Employee? employee = _dbContext.Employees.SingleOrDefault(e => e.EmployeeId == model.Id);
+                Technology? technology = _dbContext.Technologies.SingleOrDefault(t => t.TechnologyId == model.Id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (technology == null)
+                    return BadRequest("Technology not found");
 
-                employee.Name = model.Name;
-                employee.Surname = model.Surname;
+                technology.Name = model.Name;
+                technology.TechnologyType = model.TechnologyType;
 
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not edited");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Technology not edited");
             }
             catch (Exception ex)
             {
@@ -103,17 +103,14 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                Employee? employee = _dbContext.Employees.Include(e => e.Activities).SingleOrDefault(e => e.EmployeeId == id);
+                Technology? technology = _dbContext.Technologies.SingleOrDefault(t => t.TechnologyId == id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (technology == null)
+                    return BadRequest("Technology not found");
 
-                employee.IsDeleted = toDelete;
+                technology.IsDeleted = toDelete;
 
-                if (toDelete)
-                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.EmployeeId == id).ToList());
-
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not deleted");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Technology not deleted");
             }
             catch (Exception ex)
             {

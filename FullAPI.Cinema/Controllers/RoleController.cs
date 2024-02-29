@@ -8,13 +8,13 @@ namespace FullAPI.Cinema.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class RoleController : ControllerBase
     {
         private readonly CinemaDbContext _dbContext;
         private readonly Mapper _mapper;
-        private readonly ILogger<EmployeeController> _logger;
+        private readonly ILogger<RoleController> _logger;
 
-        public EmployeeController(CinemaDbContext dbContext, Mapper mapper, ILogger<EmployeeController> logger)
+        public RoleController(CinemaDbContext dbContext, Mapper mapper, ILogger<RoleController> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -27,15 +27,16 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                var employee = _dbContext.Employees
-                    .Include(e => e.Activities).ThenInclude(a => a.Show).ThenInclude(s => s.MovieRoom)
-                    .Include(e => e.Activities).ThenInclude(a => a.Role)
-                    .SingleOrDefault(e => e.EmployeeId == id);
+                var role = _dbContext.Roles
+                    .Include(r => r.Activities).ThenInclude(a => a.Employee)
+                    .Include(r => r.Activities).ThenInclude(a => a.Show)
+                    .ThenInclude(s => s.MovieRoom)
+                    .SingleOrDefault(r => r.RoleId == id);
 
-                if (employee == null)
+                if (role == null)
                     return BadRequest("Employee not found");
 
-                return Ok(_mapper.MapEntityToModel(employee));
+                return Ok(_mapper.MapEntityToModel(role));
             }
             catch (Exception ex)
             {
@@ -49,9 +50,9 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                var employees = _dbContext.Employees.ToList();
+                var roles = _dbContext.Roles.ToList();
 
-                return Ok(employees.ConvertAll(_mapper.MapEntityToModel));
+                return Ok(roles.ConvertAll(_mapper.MapEntityToModel));
             }
             catch (Exception ex)
             {
@@ -61,12 +62,12 @@ namespace FullAPI.Cinema.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(EmployeeModel model)
+        public IActionResult Post(RoleModel model)
         {
             try
             {
                 _dbContext.Add(_mapper.MapModelToEntity(model));
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not created");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Role not created");
             }
             catch (Exception ex)
             {
@@ -76,19 +77,18 @@ namespace FullAPI.Cinema.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(EmployeeModel model)
+        public IActionResult Put(RoleModel model)
         {
             try
             {
-                Employee? employee = _dbContext.Employees.SingleOrDefault(e => e.EmployeeId == model.Id);
+                Role? role = _dbContext.Roles.SingleOrDefault(r => r.RoleId == model.Id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (role == null)
+                    return BadRequest("Role not found");
 
-                employee.Name = model.Name;
-                employee.Surname = model.Surname;
+                role.Description = model.Description;
 
-                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not edited");
+                return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Role not edited");
             }
             catch (Exception ex)
             {
@@ -103,15 +103,15 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                Employee? employee = _dbContext.Employees.Include(e => e.Activities).SingleOrDefault(e => e.EmployeeId == id);
+                Role? role = _dbContext.Roles.Include(r => r.Activities).SingleOrDefault(r => r.RoleId == id);
 
-                if (employee == null)
-                    return BadRequest("Employee not found");
+                if (role == null)
+                    return BadRequest("Role not found");
 
-                employee.IsDeleted = toDelete;
+                role.IsDeleted = toDelete;
 
-                if (toDelete)
-                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.EmployeeId == id).ToList());
+                if(toDelete)
+                    _dbContext.RemoveRange(_dbContext.Activities.Where(a => a.RoleId == id).ToList());
 
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Employee not deleted");
             }

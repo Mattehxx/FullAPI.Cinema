@@ -79,9 +79,11 @@ namespace FullAPI.Cinema.Controllers
             try
             {
                 var entity = _mapper.MapModelToEntity(model);
-                entity.Technologies = _dbContext.Technologies
-                    .Join(model.Techonlogies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
-                    .ToList();
+                if (model.Techonlogies != null)
+                    entity.Technologies = _dbContext.Technologies.ToList()
+                        .Join(model.Techonlogies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                        .Where(t => !t.IsDeleted)
+                        .ToList();
                 _dbContext.Add(entity);
                 _dbContext.SaveChanges();
 
@@ -99,7 +101,7 @@ namespace FullAPI.Cinema.Controllers
         {
             try
             {
-                Movie? entity = _dbContext.Movies.SingleOrDefault(m => m.MovieId == model.Id);
+                Movie? entity = _dbContext.Movies.Include(m => m.Technologies).SingleOrDefault(m => m.MovieId == model.Id);
                 
                 if (entity == null)
                     return BadRequest("Movie not found");
@@ -109,9 +111,16 @@ namespace FullAPI.Cinema.Controllers
                 entity.Description = model.Description;
                 entity.Duration = model.Duration;
                 entity.LimitationId = model.LimitationId;
-                entity.Technologies = _dbContext.Technologies
-                    .Join(model.Techonlogies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
-                    .ToList();
+                if (model.Techonlogies != null)
+                {
+                    entity.Technologies?.RemoveAll(t => true);
+                    _dbContext.SaveChanges();
+
+                    entity.Technologies = _dbContext.Technologies.ToList()
+                        .Join(model.Techonlogies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                        .Where(t => !t.IsDeleted)
+                        .ToList();
+                }
 
                 _dbContext.Update(entity);
                 _dbContext.SaveChanges();

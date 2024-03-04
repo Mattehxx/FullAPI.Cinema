@@ -120,6 +120,8 @@ namespace FullAPI.Cinema.Models
                 Description = entity.Description,
                 Duration = entity.Duration,
                 IsDeleted = entity.IsDeleted,
+                LimitationId = entity.LimitationId,
+                Limitation = entity.Limitation?.Name,
                 Techonlogies = entity.Technologies?.ConvertAll(MapEntityToItemModel),
                 Shows = entity.Shows?.ConvertAll(MapEntityToMovieShowModel)
             };

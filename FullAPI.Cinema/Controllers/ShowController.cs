@@ -173,8 +173,10 @@ namespace FullAPI.Cinema.Controllers
                     .Where(s => 
                     s.ShowId != entity.ShowId &&
                     s.MovieRoomId == entity.MovieRoomId &&
-                    ((entity.StartTime >= s.StartTime && entity.StartTime <= s.EndTime) ||
-                    (entity.EndTime >= s.StartTime && entity.EndTime <= s.EndTime)))
+                    ((entity.StartTime >= s.StartTime && entity.EndTime <= s.EndTime) || //se entity è compresa
+                    (entity.EndTime >= s.StartTime && entity.EndTime <= s.EndTime) || //se la fine è compresa
+                    (entity.StartTime >= s.StartTime && entity.StartTime <= s.EndTime) || //se l'inizio è compreso
+                    (entity.StartTime <= s.StartTime && entity.EndTime >= s.EndTime))) //se entity comprende
                     .ToList();
 
                 return sameTimeShows;

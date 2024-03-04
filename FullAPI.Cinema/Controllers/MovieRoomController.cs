@@ -70,9 +70,10 @@ namespace FullAPI.Cinema.Controllers
             {
                 model.Id = 0;
                 var entity = _mapper.MapModelToEntity(model);
-                entity.Technologies = _dbContext.Technologies
-                    .Join(model.Technologies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
-                    .ToList();
+                if(model.Technologies != null)
+                    entity.Technologies = _dbContext.Technologies.ToList()
+                        .Join(model.Technologies, t => t.TechnologyId, mt => mt.Id, (t, mt) => t)
+                        .ToList();
 
                 _dbContext.Add(entity);
                 return _dbContext.SaveChanges() > 0 ? Ok() : BadRequest("Movie room not created");

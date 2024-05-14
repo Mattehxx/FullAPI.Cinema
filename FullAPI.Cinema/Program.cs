@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSqlServer<CinemaDbContext>(builder.Configuration.GetConnectionString("Default"));
+string connString = builder.Configuration.GetConnectionString("Default")!;
+builder.Services.AddSqlServer<CinemaDbContext>(connString);
 builder.Services.AddSingleton<Mapper>();
 
 var app = builder.Build();
@@ -33,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

@@ -1,0 +1,16 @@
+services:
+
+  webAPICinema:
+    image: "movie-img"
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+
+    ports:
+      - "8075:8080"
+
+    container_name: movie-container
+    restart: on-failure
+    hostname: "movie-app"
+    volumes:
+      - ./appsettings.json:/src/FullAPI.Cinema/appsettings.json

@@ -1,0 +1,1 @@
+docker run -d --hostname mssqlServer --name sqlServerService -p 1433:1433 -v "C:/temp/sqlserverData:/var/opt/mssql/data" -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=DockerTest1!" mcr.microsoft.com/mssql/server:2019-latest

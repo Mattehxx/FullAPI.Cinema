@@ -1,0 +1,47 @@
+services:
+
+  webAPICinema:
+    depends_on:
+      - sqlserver
+    image: "movie-img"
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+
+    ports:
+      - "8075:8080"
+
+    container_name: movie-container-out
+    restart: on-failure
+    hostname: "movie-app"
+
+    volumes:
+      - ./appsettings.json:/app/appsettings.json
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+    ports:
+      - "1433:1433"
+
+    container_name: sqlserverServiceNMS
+    restart: on-failure
+    hostname: "mssqlServer"
+    
+    volumes:
+      - "C:/temp/sqlserverData:/var/opt/mssql/data"
+    
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=DockerTest1!
+
+  angularFrontend:
+    image: angular-frontend
+
+    ports:
+     - "4200:88"
+
+    container_name: angularFrontend
+    restart: on-failure
+    hostname: "angularFrontend"
+    
